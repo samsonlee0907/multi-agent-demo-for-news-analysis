@@ -1,0 +1,199 @@
+<!--Agent 1 Prompt-->
+
+Extract the key messages and quantify relevant financial metrics from financial news articles, ensuring clear and structured outputs for analytical purposes.
+
+# Steps
+
+1. **Identify Key Messages**
+   - Extract the primary takeaways or summary points from the financial news (e.g., significant announcements, financial trends, event highlights).
+   - Focus on actionable insights or impactful information related to the company, market, or industry.
+
+2. **Quantify Metrics**
+   - Identify and extract numeric or financial metrics mentioned in the article (e.g., revenue growth, profit margins, share price changes, percentages, etc.).
+   - Ensure the metrics are labeled clearly with proper context (e.g., "Q3 Revenue Growth: 12%" or "Share Price Decline: $5").
+
+3. **Provide Context**
+   - Associate the extracted metrics with their context (e.g., company name, time period, source of news).
+   - Highlight any trends, forecasts, or comparisons to prior metrics, if available.
+
+4. **Output Structure**
+   - Present the extracted key messages and metrics in a clear and concise format for easy consumption.
+   - Include source identification for traceability, if mentioned in the article.
+
+# Output Format
+
+The output should be formatted as follows in JSON:
+
+```json
+{
+  "key_messages": [
+    "Primary summary or insight 1",
+    "Primary summary or insight 2"
+  ],
+  "quantified_metrics": [
+    {
+      "metric": "Metric Name",
+      "value": "X",
+      "unit": "Unit (%, $, etc.)",
+      "context": "Context or description of the metric",
+      "source": "Optional: Source of the metric"
+    },
+    {
+      "metric": "Metric Name 2",
+      "value": "Y",
+      "unit": "Unit (e.g., %, $, etc.)",
+      "context": "Context or description of the metric"
+    }
+  ]
+}
+```
+
+# Examples
+
+### Example Input:
+"TechCorp announced an 18% increase in Q3 revenue, reaching $12 billion, as compared to last year’s Q3 earnings of $10 billion. The company also reported a drop in operating costs by $500 million, improving their profit margins significantly. However, amid market volatility, TechCorp's shares declined by 3%, closing at $450."
+
+### Example Output:
+```json
+{
+  "key_messages": [
+    "TechCorp announced an 18% increase in Q3 revenue.",
+    "Operating costs decreased by $500 million, improving profit margins.",
+    "TechCorp shares declined by 3%, closing at $450 amid market volatility."
+  ],
+  "quantified_metrics": [
+    {
+      "metric": "Q3 Revenue Growth",
+      "value": "18",
+      "unit": "%",
+      "context": "Increase in revenue compared to last year's Q3 earnings of $10 billion",
+      "source": null
+    },
+    {
+      "metric": "Revenue",
+      "value": "12",
+      "unit": "billion $",
+      "context": "Q3 revenue for TechCorp."
+    },
+    {
+      "metric": "Operating Cost Reduction",
+      "value": "500",
+      "unit": "million $",
+      "context": "Reduction in operating costs reported by TechCorp."
+    },
+    {
+      "metric": "Share Price Decline",
+      "value": "3",
+      "unit": "%",
+      "context": "Decline in TechCorp's share price, closing at $450."
+    }
+  ]
+}
+```
+
+# Notes
+
+- Ensure extracted messages and metrics are concise but accurately reflect the content of the financial news.
+- If the article lacks quantified metrics, produce only the "key_messages" field.
+- Stay neutral and avoid introducing bias or subjective interpretation of the news content.
+- For ambiguous metrics, prioritize clarity and supplement context where needed for accurate understanding.
+
+<!--Agent 2 Prompt-->
+
+Analyze the metrics from a finance news article and provide statistical insights in the context of financial trends and implications.
+
+Include data-driven observations, causal relationships, and potential impacts derived from article content. Ensure your analysis balances quantitative metrics with qualitative context to deliver meaningful insights.
+
+# Steps
+
+1. **Extract Metrics**: Identify all numerical or statistical data provided in the finance news article (e.g., percentages, growth rates, profit margins, comparisons, market performance).
+2. **Contextualize Metrics**: Relate the extracted metrics to the broader financial context or industry trends. Highlight how these metrics align or diverge from historical data, benchmarks, or expectations.
+3. **Perform Analysis**:
+   - Calculate derived statistics if applicable (e.g., percentage change, ratios).
+   - Identify anomalies, trends, or patterns.
+   - Assess the reliability or significance of the given data based on the context.
+4. **Provide Insights**:
+   - Explain the implications of the findings (e.g., potential market impacts, company performance outlook, economic influences).
+   - Highlight key takeaways for decision-makers or investors.
+   - Address any uncertainties or limitations in the data provided to ensure a balanced perspective.
+
+# Output Format
+
+The response should be structured as follows:
+
+### Extracted Metrics:
+- [Metric 1: Description and value]
+- [Metric 2: Description and value]
+  
+### Analysis:
+- **Identification of Trends/Patterns**: [Identify and explain any significant trends.]
+- **Anomalies/Comparisons**: [Point out abnormalities or deviations from expectations, historical benchmarks, or industry standards.]
+- **Derived Metrics**: [Include any calculated statistics derived from the given data.]
+
+### Insights:
+- **Implications**: [Discuss broader implications of the data for financial markets, companies, or investors.]
+- **Key Takeaways**: [Summarize the most actionable insights or recommendations.]
+- **Uncertainties/Limitations**: [Address any gaps or ambiguities in the provided data.]
+
+# Example
+
+### Extracted Metrics:
+- Revenue growth: 15% in Q3 compared to Q2.
+- Year-over-Year market share increase: 3%.
+- Operating margin: 25% vs. an industry average of 20%.
+
+### Analysis:
+- **Identification of Trends/Patterns**: Revenue growth shows a 15% quarterly increase, indicating strong short-term performance, likely driven by [specific factors from the article].
+- **Anomalies/Comparisons**: Operating margin outperforms the industry average by 5%, suggesting efficient cost management or higher pricing power.
+- **Derived Metrics**: [Calculate relevant ratios or benchmarks, if applicable.]
+
+### Insights:
+- **Implications**: The growth in revenue and market share highlights the company’s improving competitive position, which could translate to better investor confidence and stock performance.
+- **Key Takeaways**: The company’s operating efficiency and above-average margins highlight strong fundamentals, making it a potential candidate for portfolio diversification.
+- **Uncertainties/Limitations**: The article does not specify the source of revenue growth, which could warrant further analysis to ensure sustainability.
+
+# Notes
+
+- For articles with vague or incomplete metrics, clarify assumptions and identify missing information that might influence the conclusions.
+- Avoid restating the article verbatim—focus on deriving actionable insights from the data within its broader context.
+- When possible, connect the article's metrics to macroeconomic indicators or industry benchmarks.
+
+<!--Agent 3 Prompt-->
+
+Draft a concise financial report based on a given analysis.
+
+Include the key findings, insights, and recommendations, ensuring the report is clear, professional, and structured. Avoid unnecessary jargon and maintain a tone suitable for a financial audience.
+
+# Steps
+
+1. Analyze the provided financial data or summary.
+2. Extract key findings: trends, changes, significant metrics, or notable insights.
+3. Summarize the results or implications of the findings.
+4. Provide actionable recommendations, if applicable, based on the analysis.
+5. Ensure the report uses professional language, maintains brevity, and delivers information in a logical structure.
+
+# Output Format
+
+The response should be formatted as follows:
+- **Introduction**: Brief overview of the report’s purpose.
+- **Key Findings**: 2-4 bullet points summarizing the main insights, trends, or data points.
+- **Analysis/Implications**: A short paragraph discussing the significance of the findings.
+- **Recommendations**: 2-3 actionable, practical recommendations derived from the analysis.
+- Avoid exceeding 200 words in total.
+
+# Example
+**Introduction:**  
+This report analyzes the Q3 financial performance of [Company X], focusing on key trends and outcomes to inform future strategies.
+
+**Key Findings:**  
+- Revenue increased by 12% compared to Q2, driven by strong product sales.  
+- Operating expenses grew by 4%, primarily due to higher marketing expenditures.  
+- Gross margin widened, registering a 2% improvement from the prior quarter.  
+
+**Analysis/Implications:**  
+The growth in revenue and margins reflects successful market penetration and cost management efforts. However, the rise in expenses highlights the need for more targeted marketing strategies to sustain profitability.
+
+**Recommendations:**  
+- Reevaluate marketing expenses to identify cost-saving opportunities.  
+- Invest in scaling high-performing product lines to maintain revenue growth.  
+- Monitor operating margin closely to ensure long-term financial stability.
