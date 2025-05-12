@@ -145,9 +145,10 @@
                 <label for="agent1-model">Select Model</label>  
                 <select id="agent1-model">  
                     <option value="gpt-4.1">gpt-4.1</option>  
-                    <option value="gpt-4o">gpt-4o</option>  
+                    <option value="gpt-4o">gpt-4o</option>
+                    <option value="o1">o1</option>
+                    <option value="o1-mini">o1</option>  
                     <option value="o3-mini">o3-mini</option>  
-                    <option value="o1">o1</option>  
                     <option value="o4-mini">o4-mini</option>  
                 </select>  
             </div>  
@@ -164,9 +165,10 @@
                 <label for="agent2-model">Select Model</label>  
                 <select id="agent2-model">  
                     <option value="gpt-4.1">gpt-4.1</option>  
-                    <option value="gpt-4o">gpt-4o</option>  
+                    <option value="gpt-4o">gpt-4o</option>
+                    <option value="o1">o1</option>
+                    <option value="o1-mini">o1</option>  
                     <option value="o3-mini">o3-mini</option>  
-                    <option value="o1">o1</option>  
                     <option value="o4-mini">o4-mini</option>  
                 </select>  
             </div>  
@@ -183,9 +185,10 @@
                 <label for="agent3-model">Select Model</label>  
                 <select id="agent3-model">  
                     <option value="gpt-4.1">gpt-4.1</option>  
-                    <option value="gpt-4o">gpt-4o</option>  
+                    <option value="gpt-4o">gpt-4o</option>
+                    <option value="o1">o1</option>
+                    <option value="o1-mini">o1</option>  
                     <option value="o3-mini">o3-mini</option>  
-                    <option value="o1">o1</option>  
                     <option value="o4-mini">o4-mini</option>  
                 </select>  
             </div>  
@@ -222,6 +225,7 @@
             "gpt-4.1":  { deployment: "gpt-4.1",           model: "gpt-4.1" },  
             "o3-mini":  { deployment: "o3-mini",           model: "o3-mini" },  
             "o1":       { deployment: "o1",                model: "o1" },  
+            "o1-mini":  { deployment: "o1-mini",           model: "o1-mini" },  
             "o4-mini":  { deployment: "o4-mini",           model: "o4-mini" }  
         };  
   
@@ -279,8 +283,8 @@
         }  
   
         function supportsDescribeImageViaFunction(logicalName) {  
-            // Only o1-mini and o3-mini trigger describe image, as per your instructions  
-            return logicalName === "o4-mini" || logicalName === "o3-mini";  
+            // Only o1-mini trigger describe image  
+            return logicalName === "o1-mini";  
         }  
   
         // Pipeline helper: wrap callAgent and buildMessages  
@@ -290,7 +294,7 @@
             return await callAgent(apiKey, logicalName, messages);  
         }  
   
-        // Describe image function (always uses gpt-4o), returns MARKDOWN string description  
+        // Describe image function using gpt-4o for models do not support image input, returns MARKDOWN string description  
         async function describeImages(apiKey, imageUrls) {  
             const userMsg = [  
                 { type: 'text', text: 'Describe the following images in detail:' },  
@@ -392,7 +396,6 @@
                 let dataForAgent1 = newsText;  
                 let agent1ImageUrlsForModel = [];  
   
-                // --- MAIN LOGIC CHANGE: Only agent 1 with o3-mini or o1-mini triggers describeImages, others get image_url input ---  
                 if (files.length > 0) {  
                     if (supportsDescribeImageViaFunction(agents[0].model)) {  
                         // AGENT 1 + o3-mini/o1-mini: describe the images in markdown, prepend to input  
@@ -412,11 +415,12 @@
                 const content1 = res1.choices?.[0]?.message?.content || '';  
                 displayCard('extract-results', agents[0].model, content1);  
   
-                // AGENT 2 and AGENT 3 logic unchanged; pass text results as before (no image input needed)  
+                // AGENT 2
                 const res2 = await chatCompletion(apiKey, agents[1].model, agents[1].prompt, content1);  
                 const content2 = res2.choices?.[0]?.message?.content || '';  
                 displayCard('analysis-results', agents[1].model, content2);  
-  
+
+                // AGENT 3
                 const res3 = await chatCompletion(apiKey, agents[2].model, agents[2].prompt, content2);  
                 const content3 = res3.choices?.[0]?.message?.content || '';  
                 displayCard('report-results', agents[2].model, content3);  
