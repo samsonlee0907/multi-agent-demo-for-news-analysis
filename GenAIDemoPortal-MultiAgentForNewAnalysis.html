@@ -147,7 +147,7 @@
                     <option value="gpt-4.1">gpt-4.1</option>  
                     <option value="gpt-4o">gpt-4o</option>
                     <option value="o1">o1</option>
-                    <option value="o1-mini">o1</option>  
+                    <option value="o1-mini">o1-mini</option>  
                     <option value="o3-mini">o3-mini</option>  
                     <option value="o4-mini">o4-mini</option>  
                 </select>  
@@ -167,7 +167,7 @@
                     <option value="gpt-4.1">gpt-4.1</option>  
                     <option value="gpt-4o">gpt-4o</option>
                     <option value="o1">o1</option>
-                    <option value="o1-mini">o1</option>  
+                    <option value="o1-mini">o1-mini</option>  
                     <option value="o3-mini">o3-mini</option>  
                     <option value="o4-mini">o4-mini</option>  
                 </select>  
@@ -187,7 +187,7 @@
                     <option value="gpt-4.1">gpt-4.1</option>  
                     <option value="gpt-4o">gpt-4o</option>
                     <option value="o1">o1</option>
-                    <option value="o1-mini">o1</option>  
+                    <option value="o1-mini">o1-mini</option>  
                     <option value="o3-mini">o3-mini</option>  
                     <option value="o4-mini">o4-mini</option>  
                 </select>  
@@ -223,9 +223,9 @@
         const MODEL_MAP = {  
             "gpt-4o":   { deployment: "gpt-4o",            model: "gpt-4o" },  
             "gpt-4.1":  { deployment: "gpt-4.1",           model: "gpt-4.1" },  
-            "o3-mini":  { deployment: "o3-mini",           model: "o3-mini" },  
             "o1":       { deployment: "o1",                model: "o1" },  
-            "o1-mini":  { deployment: "o1-mini",           model: "o1-mini" },  
+            "o1-mini":  { deployment: "o1-mini",           model: "o1-mini" },
+            "o3-mini":  { deployment: "o3-mini",           model: "o3-mini" },  
             "o4-mini":  { deployment: "o4-mini",           model: "o4-mini" }  
         };  
   
@@ -294,7 +294,7 @@
             return await callAgent(apiKey, logicalName, messages);  
         }  
   
-        // Describe image function using gpt-4o for models do not support image input, returns MARKDOWN string description  
+        // Describe image function using gpt-4o for models do not support image input  
         async function describeImages(apiKey, imageUrls) {  
             const userMsg = [  
                 { type: 'text', text: 'Describe the following images in detail:' },  
