@@ -1,22 +1,17 @@
 # Multi-Agent Demo for News Analysis  
    
 ## Overview  
-The Multi-Agent Demo Portal is designed to analyze financial news using a configurable three-agent pipeline. Users can input financial news articles, configure the roles and tasks for each agent, and run the analysis to generate insights and reports based on the provided data.  
+The [Multi-Agent Demo Portal](GenAIDemoPortal-MultiAgentForNewAnalysis.html) is designed to analyze financial news using a configurable three-agent pipeline. Users can input financial news articles, configure the roles and tasks for each agent, and run the analysis to generate insights and reports based on the provided data.  
    
 ## Features  
 - **Agent Configuration**: The portal allows you to set up three different agents, each with its specific role, such as Financial News Analyst, Statistician, and Financial Writer.  
 - **Model Selection**: Users can select different models (e.g., GPT-4, O3-mini) for each agent based on their requirements.  
 - **Image Upload**: Users can optionally upload images to enhance the analysis.  
-- **Interactive Interface**: A clean and intuitive interface guides the user through the required inputs and presents the results in an organized manner.  
    
 ## Instructions  
    
 1. **Insert API Key**:   
    Make sure to enter your API key in the provided input field. This key is necessary for the application to access the required services.   
-  
-   ```  
-   API Key Placeholder: [Insert your API key here]  
-   ```  
    
 2. **Input Financial News**:   
    Use the provided text area to paste the financial news text you want to analyze.  
