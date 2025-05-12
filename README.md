@@ -1,4 +1,3 @@
-```markdown  
 # Multi-Agent Demo for News Analysis  
    
 ## Overview  
@@ -40,6 +39,3 @@ For examples of prompts that can be used for configuring the agents, please refe
    
 ## Note  
 Please ensure that you replace placeholders such as the API endpoint and version in the code with your actual values before running the application.  
-   
-Happy analyzing!  
-```  
