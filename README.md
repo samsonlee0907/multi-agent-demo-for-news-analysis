@@ -6,7 +6,7 @@ The Multi-Agent Demo Portal is designed to analyze financial news using a config
    
 ## Features  
 - **Agent Configuration**: The portal allows you to set up three different agents, each with its specific role, such as Financial News Analyst, Statistician, and Financial Writer.  
-- **Model Selection**: Users can select different models (e.g., GPT-4, O3-mini) for each agent based on their requirements.  
+- **Model Selection**: Users can select different models (e.g., GPT-4.1, o4-mini) for each agent based on their requirements.  
 - **Image Upload**: Users can optionally upload images to enhance the analysis.  
    
 ## Instructions
