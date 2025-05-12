@@ -1,0 +1,437 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8" />  
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />  
+    <title>Multi-Agent Demo for News Analysis</title>  
+    <style>  
+        body {  
+            font-family: Arial, sans-serif;  
+            margin: 0; padding: 0;  
+            background-color: #f9f9f9; color: #333;  
+        }  
+        header {  
+            text-align: center;  
+            padding: 30px 20px;  
+            background-color: #e3eaf7;  
+        }  
+        header h1 { margin: 0 0 10px; font-size: 2.4em; color: #0044cc; }  
+        header p  { margin: 0;  font-size: 1.1em; color: #555; }  
+        .content { padding: 20px; max-width: 900px; margin: auto; }  
+  
+        .input-group { margin-bottom: 20px; }  
+        .input-group label {  
+            display: block; font-weight: bold; margin-bottom: 5px; color: #333;  
+        }  
+        .input-group input,  
+        .input-group textarea,  
+        .input-group select {  
+            width: 100%; padding: 10px; box-sizing: border-box;  
+            font-size: 1em; border: 1px solid #ccc; border-radius: 5px;  
+        }  
+        .input-group textarea { resize: vertical; }  
+  
+        .drag-drop-area {  
+            border: 2px dashed #cccccc; border-radius: 8px;  
+            padding: 20px; text-align: center; background: #f9f9f9;  
+            color: #666; cursor: pointer; transition: border-color .3s;  
+        }  
+        .drag-drop-area.dragover {  
+            background: #e6f7ff; border-color: #007bff;  
+        }  
+        .file-list { margin-top: 10px; font-size: 14px; color: #333; }  
+        .file-list div {  
+            display: flex; align-items: center; gap: 10px; margin-bottom: 5px;  
+        }  
+        .file-list img {  
+            max-width: 60px; border-radius: 4px;  
+        }  
+  
+        .agent-config {  
+            border: 1px solid #ddd; background: #fff;  
+            padding: 15px; border-radius: 5px; margin-bottom: 20px;  
+        }  
+        .agent-config h3 { margin-top: 0; color: #0044cc; }  
+  
+        button {  
+            padding: 12px 20px; font-size: 1em; border: none;  
+            border-radius: 5px; background-color: #0044cc;  
+            color: white; cursor: pointer;  
+        }  
+        button:hover { background-color: #003399; }  
+  
+        .spinner {  
+            display: none; margin: 20px auto;  
+            border: 4px solid #f3f3f3; border-top: 4px solid #0044cc;  
+            border-radius: 50%; width: 40px; height: 40px;  
+            animation: spin 1s linear infinite;  
+        }  
+        @keyframes spin {  
+            from { transform: rotate(0deg); }  
+            to   { transform: rotate(360deg); }  
+        }  
+  
+        .error-message {  
+            color: red; font-weight: bold; text-align: center; margin-top: 10px;  
+        }  
+  
+        .results {  
+            display: flex; flex-direction: column; gap: 30px; padding: 20px;  
+        }  
+        .result-section h2 {  
+            font-size: 1.5em; color: #0044cc; margin-bottom: 10px;  
+        }  
+        .result-cards {  
+            display: flex; flex-wrap: wrap; gap: 15px;  
+        }  
+        .result-card {  
+            background: #fff; border: 1px solid #ddd;  
+            border-radius: 5px; padding: 15px;  
+            flex: 1 1 280px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);  
+            text-align: left;  
+        }  
+  
+        .markdown-body h1 { font-size:1.4em; margin:10px 0; color:#0044cc }  
+        .markdown-body h2 { font-size:1.3em; margin:8px 0; color:#0055dd }  
+        .markdown-body h3 { font-size:1.2em; margin:6px 0; color:#0066ee }  
+        .markdown-body p  { margin:6px 0 }  
+        .markdown-body ul { margin:6px 0 6px 20px }  
+        .markdown-body li { margin:4px 0 }  
+        .markdown-body strong { font-weight:bold }  
+        .markdown-body em     { font-style:italic }  
+        .markdown-body br     { display:block; margin:4px 0 }  
+  
+        @media (max-width: 600px) {  
+            .result-cards { flex-direction: column; }  
+        }  
+    </style>  
+    <!-- Marked.js for Markdown rendering -->  
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>  
+</head>  
+<body>  
+    <header>  
+        <h1>Multi-Agent Demo Portal</h1>  
+        <p>Configure and run a 3-agent pipeline</p>  
+    </header>  
+    <div class="content">  
+        <!-- API Key -->  
+        <div class="input-group">  
+            <label for="api-key">API Key</label>  
+            <input type="password" id="api-key" placeholder="Enter your API key" />  
+        </div>  
+        <!-- News Input -->  
+        <div class="input-group">  
+            <label for="news-input">Input</label>  
+            <textarea id="news-input" rows="4" placeholder="Paste financial news text here..."></textarea>  
+        </div>  
+        <!-- Image Upload -->  
+        <div class="input-group">  
+            <label>Upload Images (optional)</label>  
+            <div id="dragDropArea" class="drag-drop-area">  
+                Drag & drop images here or click to select  
+            </div>  
+            <input type="file" id="images" accept="image/*" multiple style="display:none" />  
+            <div id="fileList" class="file-list"></div>  
+        </div>  
+        <!-- Agent 1 Config -->  
+        <div class="agent-config">  
+            <h3>Agent 1</h3>  
+            <div class="input-group">  
+                <label for="agent1-prompt">Role & Task Description</label>  
+                <textarea id="agent1-prompt" rows="2"  
+                    placeholder="As a Financial News Analyst, extract key messages & quantify metrics."></textarea>  
+            </div>  
+            <div class="input-group">  
+                <label for="agent1-model">Select Model</label>  
+                <select id="agent1-model">  
+                    <option value="gpt-4.1">gpt-4.1</option>  
+                    <option value="gpt-4o">gpt-4o</option>  
+                    <option value="o3-mini">o3-mini</option>  
+                    <option value="o1">o1</option>  
+                    <option value="o4-mini">o4-mini</option>  
+                </select>  
+            </div>  
+        </div>  
+        <!-- Agent 2 Config -->  
+        <div class="agent-config">  
+            <h3>Agent 2</h3>  
+            <div class="input-group">  
+                <label for="agent2-prompt">Role & Task Description</label>  
+                <textarea id="agent2-prompt" rows="2"  
+                    placeholder="As a Statistician, analyze the metrics & provide insights."></textarea>  
+            </div>  
+            <div class="input-group">  
+                <label for="agent2-model">Select Model</label>  
+                <select id="agent2-model">  
+                    <option value="gpt-4.1">gpt-4.1</option>  
+                    <option value="gpt-4o">gpt-4o</option>  
+                    <option value="o3-mini">o3-mini</option>  
+                    <option value="o1">o1</option>  
+                    <option value="o4-mini">o4-mini</option>  
+                </select>  
+            </div>  
+        </div>  
+        <!-- Agent 3 Config -->  
+        <div class="agent-config">  
+            <h3>Agent 3</h3>  
+            <div class="input-group">  
+                <label for="agent3-prompt">Role & Task Description</label>  
+                <textarea id="agent3-prompt" rows="2"  
+                    placeholder="As a Financial Writer, draft a concise report based on analysis."></textarea>  
+            </div>  
+            <div class="input-group">  
+                <label for="agent3-model">Select Model</label>  
+                <select id="agent3-model">  
+                    <option value="gpt-4.1">gpt-4.1</option>  
+                    <option value="gpt-4o">gpt-4o</option>  
+                    <option value="o3-mini">o3-mini</option>  
+                    <option value="o1">o1</option>  
+                    <option value="o4-mini">o4-mini</option>  
+                </select>  
+            </div>  
+        </div>  
+        <!-- Run Pipeline -->  
+        <div class="input-group" style="text-align:center;">  
+            <button id="run-pipeline-btn">Run Full Pipeline</button>  
+        </div>  
+        <!-- Spinner & Error -->  
+        <div id="spinner" class="spinner"></div>  
+        <div id="error-message" class="error-message"></div>  
+    </div>  
+    <!-- Results -->  
+    <div class="results">  
+        <div class="result-section">  
+            <h2>Agent 1 Results</h2>  
+            <div id="extract-results" class="result-cards"></div>  
+        </div>  
+        <div class="result-section">  
+            <h2>Agent 2 Results</h2>  
+            <div id="analysis-results" class="result-cards"></div>  
+        </div>  
+        <div class="result-section">  
+            <h2>Agent 3 Results</h2>  
+            <div id="report-results" class="result-cards"></div>  
+        </div>  
+    </div>  
+  
+    <script>  
+        // --- Model selection mapping ---  
+        // Maps dropdown value to { deployment, model }  
+        const MODEL_MAP = {  
+            "gpt-4o":   { deployment: "gpt-4o",            model: "gpt-4o" },  
+            "gpt-4.1":  { deployment: "gpt-4.1",           model: "gpt-4.1" },  
+            "o3-mini":  { deployment: "o3-mini",           model: "o3-mini" },  
+            "o1":       { deployment: "o1",                model: "o1" },  
+            "o4-mini":  { deployment: "o4-mini",           model: "o4-mini" }  
+        };  
+  
+        // Azure endpoint and API version  
+        const API_BASE_URL = 'replace-with-your-endpoint';  
+        const API_VERSION  = 'replace-with-your-version';  
+  
+        // The core system prompt for all agents  
+        const systemPromptPart = `Follow the user’s provided role, task, and data. Provide a detailed answer in markdown format.`;  
+  
+        // Core function: send to Azure OpenAI (deployment/model via mapping)  
+        async function callAgent(apiKey, logicalName, messages) {  
+            const map = MODEL_MAP[logicalName];  
+            if (!map) throw new Error(`Model ${logicalName} not mapped.`);  
+            const url = `${API_BASE_URL}/${map.deployment}/chat/completions?api-version=${API_VERSION}`;  
+            const res = await fetch(url, {  
+                method: 'POST',  
+                headers: {  
+                    'Content-Type': 'application/json',  
+                    'api-key': apiKey  
+                },  
+                body: JSON.stringify({ model: map.model, messages, max_completion_tokens: 2000 })  
+            });  
+            if (!res.ok) throw new Error(`API error ${res.status} (${logicalName})`);  
+            return res.json();  
+        }  
+  
+        // Compose messages array for the selected model  
+        function buildMessages(logicalName, userContent, imageUrls=[]) {  
+            // Only attach image URLs for models that support it  
+            let userMessage;  
+            if (imageUrls.length > 0 && !supportsDescribeImageViaFunction(logicalName)) {  
+                // For image URL support, per OpenAI API v1.5 spec  
+                userMessage = [{  
+                    "type": "text",  
+                    "text": userContent  
+                }].concat(imageUrls.map(url => ({  
+                    type: "image_url",  
+                    image_url: { url }  
+                })));  
+                return [  
+                    { role: "system", content: systemPromptPart },  
+                    { role: "user", content: userMessage }  
+                ];  
+            }  
+            // Default  
+            if (logicalName === 'o1') {  
+                return [{ role: 'user', content: `Guidance:\n${systemPromptPart}\n\n${userContent}` }];  
+            } else {  
+                return [  
+                    { role: 'system', content: systemPromptPart },  
+                    { role: 'user', content: userContent }  
+                ];  
+            }  
+        }  
+  
+        function supportsDescribeImageViaFunction(logicalName) {  
+            // Only o1-mini and o3-mini trigger describe image, as per your instructions  
+            return logicalName === "o4-mini" || logicalName === "o3-mini";  
+        }  
+  
+        // Pipeline helper: wrap callAgent and buildMessages  
+        async function chatCompletion(apiKey, logicalName, rolePrompt, dataContent, imagesForUrlInput = []) {  
+            const userContent = `Role: ${rolePrompt}\n\nData: ${dataContent}`;  
+            const messages = buildMessages(logicalName, userContent, imagesForUrlInput);  
+            return await callAgent(apiKey, logicalName, messages);  
+        }  
+  
+        // Describe image function (always uses gpt-4o), returns MARKDOWN string description  
+        async function describeImages(apiKey, imageUrls) {  
+            const userMsg = [  
+                { type: 'text', text: 'Describe the following images in detail:' },  
+                ...imageUrls.map(url => ({ type: 'image_url', image_url: { url } }))  
+            ];  
+            const messages = [  
+                { role: 'system', content: systemPromptPart },  
+                { role: 'user',   content: userMsg }  
+            ];  
+            return await callAgent(apiKey, "gpt-4o", messages)  
+                .then(res => res.choices?.[0]?.message?.content || '');  
+        }  
+  
+        // File conversion to base64 DataURL  
+        function convertFileToDataURL(file) {  
+            return new Promise((resolve, reject) => {  
+                const reader = new FileReader();  
+                reader.onload = ()=>resolve(reader.result);  
+                reader.onerror = reject;  
+                reader.readAsDataURL(file);  
+            });  
+        }  
+  
+        // Render result card utility  
+        function displayCard(containerId, model, markdownContent) {  
+            const container = document.getElementById(containerId);  
+            const card = document.createElement('div');  
+            card.className = 'result-card';  
+            card.innerHTML =  
+                `<h3>${model}</h3>  
+                 <div class="markdown-body">${marked.parse(markdownContent)}</div>`;  
+            container.appendChild(card);  
+        }  
+  
+        // Clear all result cards  
+        function clearResults() {  
+            ['extract-results','analysis-results','report-results'].forEach(id=>{  
+                document.getElementById(id).innerHTML = '';  
+            });  
+        }  
+  
+        // Handle drag & drop for image upload UI  
+        const dragDropArea = document.getElementById('dragDropArea');  
+        const fileInput    = document.getElementById('images');  
+        const fileList     = document.getElementById('fileList');  
+        dragDropArea.addEventListener('click', ()=>fileInput.click());  
+        dragDropArea.addEventListener('dragover', e=>{ e.preventDefault(); dragDropArea.classList.add('dragover'); });  
+        dragDropArea.addEventListener('dragleave', ()=>dragDropArea.classList.remove('dragover'));  
+        dragDropArea.addEventListener('drop', e=>{  
+            e.preventDefault();  
+            dragDropArea.classList.remove('dragover');  
+            fileInput.files = e.dataTransfer.files;  
+            updateFileList();  
+        });  
+        fileInput.addEventListener('change', updateFileList);  
+        function updateFileList() {  
+            fileList.innerHTML = '';  
+            Array.from(fileInput.files).forEach(file=>{  
+                const dv = document.createElement('div');  
+                const img = document.createElement('img');  
+                img.src = URL.createObjectURL(file);  
+                img.onload = ()=>URL.revokeObjectURL(img.src);  
+                dv.appendChild(img);  
+                dv.appendChild(document.createTextNode(file.name));  
+                fileList.appendChild(dv);  
+            });  
+        }  
+  
+        // ----- Pipeline controller -----  
+        async function runPipeline() {  
+            const spinner = document.getElementById('spinner');  
+            const errorEl = document.getElementById('error-message');  
+            errorEl.textContent = '';  
+            clearResults();  
+  
+            const apiKey   = document.getElementById('api-key').value.trim();  
+            const newsText = document.getElementById('news-input').value.trim();  
+            if (!apiKey)   return errorEl.textContent = 'API key required.';  
+            if (!newsText) return errorEl.textContent = 'News input required.';  
+  
+            // Gather agent configs  
+            const agents = [1,2,3].map(i=>({  
+                prompt: document.getElementById(`agent${i}-prompt`).value.trim()  
+                        || document.getElementById(`agent${i}-prompt`).placeholder,  
+                model:  document.getElementById(`agent${i}-model`).value  
+            }));  
+  
+            // Convert images to DataURLs  
+            const files = Array.from(fileInput.files);  
+            let imageUrls = [];  
+            if (files.length>0) {  
+                try {  
+                    imageUrls = await Promise.all(files.map(convertFileToDataURL));  
+                } catch(e) { console.error(e); }  
+            }  
+  
+            spinner.style.display = 'block';  
+            try {  
+                let dataForAgent1 = newsText;  
+                let agent1ImageUrlsForModel = [];  
+  
+                // --- MAIN LOGIC CHANGE: Only agent 1 with o3-mini or o1-mini triggers describeImages, others get image_url input ---  
+                if (files.length > 0) {  
+                    if (supportsDescribeImageViaFunction(agents[0].model)) {  
+                        // AGENT 1 + o3-mini/o1-mini: describe the images in markdown, prepend to input  
+                        const imgDesc = await describeImages(apiKey, imageUrls);  
+                        dataForAgent1 = imgDesc + '\n\n' + newsText;  
+                        // Do not add images via image_url input for these models  
+                        agent1ImageUrlsForModel = [];  
+                    } else {  
+                        // AGENT 1 ANY OTHER MODEL: pass imageUrls as image_url input with the news text  
+                        // Compose user prompt as usual, imageUrls attached by buildMessages  
+                        agent1ImageUrlsForModel = imageUrls;  
+                    }  
+                }  
+  
+                // AGENT 1  
+                const res1 = await chatCompletion(apiKey, agents[0].model, agents[0].prompt, dataForAgent1, agent1ImageUrlsForModel);  
+                const content1 = res1.choices?.[0]?.message?.content || '';  
+                displayCard('extract-results', agents[0].model, content1);  
+  
+                // AGENT 2 and AGENT 3 logic unchanged; pass text results as before (no image input needed)  
+                const res2 = await chatCompletion(apiKey, agents[1].model, agents[1].prompt, content1);  
+                const content2 = res2.choices?.[0]?.message?.content || '';  
+                displayCard('analysis-results', agents[1].model, content2);  
+  
+                const res3 = await chatCompletion(apiKey, agents[2].model, agents[2].prompt, content2);  
+                const content3 = res3.choices?.[0]?.message?.content || '';  
+                displayCard('report-results', agents[2].model, content3);  
+  
+            } catch(err) {  
+                console.error(err);  
+                errorEl.textContent = err.message;  
+            } finally {  
+                spinner.style.display = 'none';  
+            }  
+        }  
+  
+        document.getElementById('run-pipeline-btn')  
+            .addEventListener('click', runPipeline);  
+  
+    </script>  
+</body>  
+</html>  
